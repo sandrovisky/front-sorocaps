@@ -12,12 +12,13 @@ export const slice = createSlice({
     },
     changeUser(state, { payload }) {
       return {...state, name: payload, logged: true}
-    }
+    },
+    getUser(state) {
+      return {...state}
+    },
   }
 })
 
-export const { changeUser, logout } = slice.actions
-
-export const selectUser = state => state.name
+export const { changeUser, logout, getUser } = slice.actions
 
 export default slice.reducer

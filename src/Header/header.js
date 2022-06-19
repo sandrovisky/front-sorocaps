@@ -1,46 +1,38 @@
-import { Button, Descriptions, PageHeader } from 'antd';
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { Breadcrumb, Button, Descriptions, PageHeader } from 'antd';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeUser } from '../redux/userSlice'
 
-const Header = () => {
-  const [logged, setLogged] = useState(false);
-  const [loading, setLoading] = useState(false);
-
+const Header = (props) => {
+  console.log(props)
+  const user = useSelector(state => state.user)
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    if (localStorage.getItem("logged") === null) {
-      setLogged(false);
-    } else {
-      setLogged(true);
-    }
-  });
+  const handleLogin = () => {
+    dispatch(changeUser('Sandro'));
+  }
 
   return <div className="site-page-header-ghost-wrapper">
-      <PageHeader
-        ghost={false}
-        onBack={() => window.history.back()}
-        title="Title"
-        subTitle="This is a subtitle"
-      extra={[
-          loading ? 
-        <Button key="1" type="primary">
-          loading
-        </Button> : logged ? 
-        <Button key="1" type="primary">
-          Logged
-        </Button> : 
-        <Button key="1" type="primary">
-          Login
+    <PageHeader
+      style={{ border: '1px solid' }}
+      ghost={true}
+      title="Sorocaps"
+      extra={[user.logged ??
+        <Button key="2" type="primary">
+          {user.name}
         </Button>
-        ]}
-      ><Descriptions size="small" column={3}>
-          <Descriptions.Item label="Created">Lili Qu</Descriptions.Item>
-          <Descriptions.Item label="Association">
-            <a>421421</a>
-          </Descriptions.Item>
-        </Descriptions>
-      </PageHeader>
+      ]}
+    >
+
+      <Breadcrumb separator="/">
+        {
+          props.header.map((ele, i) => {
+            console.log(ele, i)
+            return <Breadcrumb.Item key={i}><Link to={ele[1]} key={i}>{ele[0]}</Link></Breadcrumb.Item>
+          })
+        }
+      </Breadcrumb>
+    </PageHeader>
   </div>
 };
 
