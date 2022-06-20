@@ -8,6 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import CreateUserForm from './CreateUser/createUserForm';
+import Home from './Home/home';
 
 import Login from './Login/login';
 
@@ -17,9 +18,16 @@ const Routes = () => {
   if (!user.logged) {
     return <Router>
       <Switch>
-        <Route path="/login" element={<Login />} />
-        <Route path="/create-user" element={<CreateUserForm />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/home/" element={<Login />} />
+        <Route path="/create-user/" element={<CreateUserForm />} />
+        <Route path="*" element={<Navigate to="/home/"  />} />
+      </Switch>
+    </Router>
+  } else {
+    return <Router>
+      <Switch>
+        <Route path="/home/" element={<Home />} />
+        <Route path="*" element={<Navigate to="/home/"  />} />
       </Switch>
     </Router>
   }

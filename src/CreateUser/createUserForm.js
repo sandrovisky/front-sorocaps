@@ -10,7 +10,6 @@ const CreateUserForm = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [createSuccess, setCreateSuccess] = useState(false);
 
-
   const [form] = Form.useForm();
 
   const formItemLayout = {
