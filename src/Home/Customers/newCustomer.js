@@ -177,7 +177,7 @@ const NewCustomerForm = () => {
   }
 
   return <>
-    <Header header={[['Home', "/home/"], ['Novo Usuario', "/create-user/"]]} />
+    <Header header={[['Home', "/home/"], ['Novo Usuario', "/home/customers/create/"]]} />
     <div style={{ padding: '20px' }}>
       {
         createError ? <Alert

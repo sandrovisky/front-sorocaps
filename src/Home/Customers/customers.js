@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 
 const MenuCustomer = () => {
   return <div style={{ marginBottom: 16 }}>
-    <Link to="/home/customer/create/">
+    <Link to="/home/customers/create/">
       <Button type="primary" >
-        <UserAddOutlined /> Novo
+        <UserAddOutlined /> Novo Cliente
       </Button>
     </Link>
   </div>

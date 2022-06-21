@@ -7,11 +7,14 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import CreateUserForm from './Login/NewUser/newUserForm';
+
 import Home from './Home/home';
 
 import Login from './Login/login';
 import NewCustomerForm from './Home/Customers/newCustomer';
+import NewUserForm from './Login/newUserForm';
+import NewProductForm from './Home/Product/newProduct';
+import NewOrderForm from './Home/Order/newOrder';
 
 const Routes = () => {
   const user = useSelector(state => state.user)
@@ -20,7 +23,7 @@ const Routes = () => {
     return <Router>
       <Switch>
         <Route path="/home/" element={<Login />} />
-        <Route path="/create-user/" element={<CreateUserForm />} />
+        <Route path="/create-user/" element={<NewUserForm />} />
         <Route path="*" element={<Navigate to="/home/"  />} />
       </Switch>
     </Router>
@@ -28,7 +31,9 @@ const Routes = () => {
     return <Router>
       <Switch>
         <Route path="/home/" element={<Home />} />
-        <Route path="/home/customer/create/" element={<NewCustomerForm />} />
+        <Route path="/home/customers/create/" element={<NewCustomerForm />} />
+        <Route path="/home/products/create/" element={<NewProductForm/>} />
+        <Route path="/home/orders/create/" element={<NewOrderForm/>} />
         <Route path="*" element={<Navigate to="/home/"  />} />
       </Switch>
     </Router>

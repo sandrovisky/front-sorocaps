@@ -1,10 +1,11 @@
-import { Button, Form, Input, Row, Col, Typography, Spin, Alert } from 'antd';
-import { useState } from 'react';
+import { Button, Form, Input, Row, Col, Typography, Spin, Alert, InputNumber } from 'antd';
+import TextArea from 'antd/lib/input/TextArea';
+import React, { useState } from 'react';
 import api from '../../api';
 import Header from '../../Header/header';
 const { Title } = Typography;
 
-const CreateUserForm = () => {
+const NewProductForm = () => {
   const [loading, setLoading] = useState(false);
   const [createError, setCreateError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -13,8 +14,8 @@ const CreateUserForm = () => {
   const [form] = Form.useForm();
 
   const formItemLayout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 14 },
+    labelCol: { span: 10 },
+    wrapperCol: { span: 12 },
   };
 
   const formTailLayout = {
@@ -23,37 +24,26 @@ const CreateUserForm = () => {
   };
 
   const onFinish = async (values) => {
+    console.log('Success:', values);
     let error = false
+    let { code, description, measure, buyValue, sellValue } = values
+
     setLoading(true)
     setCreateError(false)
     setCreateSuccess(false)
 
-    if (values.user.length < 5) {
+    if (buyValue > sellValue) {      
       error = true
       form.setFields([
         {
-          name: 'user',
-          errors: ['Usuário precisa ter no mínimo 5 caracteres!'],
+          name: 'buyValue',
+          errors: ['Valor de venda não pode ser menor que o valor de compra!'],
         },
       ])
-    }
-
-    if (values.password.length < 6) {
-      error = true
       form.setFields([
         {
-          name: 'password',
-          errors: ['Senha precisa ter no mínimo 6 caracteres!'],
-        },
-      ])
-    }
-
-    if (values.password !== values.password_confirm) {
-      error = true
-      form.setFields([
-        {
-          name: 'password_confirm',
-          errors: ['Senhas inseridas precisam ser identicas!'],
+          name: 'sellValue',
+          errors: ['Valor de venda não pode ser menor que o valor de compra!'],
         },
       ])
     }
@@ -63,12 +53,8 @@ const CreateUserForm = () => {
       return
     }
 
-    const { user, password, name } = values
-
-    await api.post(`/users/create/`, {
-      user,
-      password,
-      name
+    await api.post(`/products/create/`, {
+      code, description, measure, buyValue, sellValue
     })
       .then((response) => {
         setCreateSuccess(true)
@@ -81,19 +67,14 @@ const CreateUserForm = () => {
         setErrorMsg(err.response.data.message)
       })
       .finally(() => setLoading(false))
-
-    console.log('Success:', values);
-
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log();
     console.log('Failed:', errorInfo);
   };
 
-
-  return <>    
-    <Header header={[['Login', "/login"], ['Novo Usuario', "/create-user"]]} />
+  return <>
+    <Header header={[['Home', "/home/"], ['Cadastrar Produto', "/home/products/create/"]]} />
     <div style={{ padding: '20px' }}>
       {
         createError ? <Alert
@@ -104,7 +85,7 @@ const CreateUserForm = () => {
       }
       {
         createSuccess ? <Alert
-          description="Usuário criado com sucesso!"
+          description="Produto cadastrado com sucesso!"
           type="success"
           banner={true}
           closable
@@ -112,11 +93,11 @@ const CreateUserForm = () => {
       }
     </div>
     <Row>
-      <Col span={8} offset={8}>
+      <Col span={10} offset={7}>
         <Spin spinning={loading}>
           <Form
             form={form}
-            name="createUser"
+            name="createProduct"
             initialValues={{
               remember: true,
             }}
@@ -127,17 +108,17 @@ const CreateUserForm = () => {
             <Form.Item
               {...formTailLayout}
             >
-              <Title level={2}>Novo Usario</Title>
+              <Title level={2}>Cadastrar Produto</Title>
             </Form.Item>
 
             <Form.Item
               {...formItemLayout}
-              label="Nome"
-              name="name"
+              label="Codigo"
+              name="code"
               rules={[
                 {
                   required: true,
-                  message: 'Insira um nome!',
+                  message: 'Informe o código!',
                 },
               ]}
             >
@@ -146,12 +127,20 @@ const CreateUserForm = () => {
 
             <Form.Item
               {...formItemLayout}
-              label="Usuario"
-              name="user"
+              label="Descrição"
+              name="description"
+            >
+              <TextArea rows={2} />
+            </Form.Item>
+
+            <Form.Item
+              {...formItemLayout}
+              label="Unidade de Medida"
+              name="measure"
               rules={[
                 {
                   required: true,
-                  message: 'Insira um usuário!',
+                  message: 'Informe a unidade de medida!',
                 },
               ]}
             >
@@ -160,30 +149,34 @@ const CreateUserForm = () => {
 
             <Form.Item
               {...formItemLayout}
-              label="Senha"
-              name="password"
+              label="Valor de Compra"
+              name="buyValue"
               rules={[
                 {
                   required: true,
-                  message: 'Insira uma senha!',
+                  message: 'Informe um valor!',
                 },
               ]}
             >
-              <Input.Password />
+              <InputNumber
+                addonBefore={'R$'}
+                style={{ width: '100%' }} min={0} step={0.01} />
             </Form.Item>
 
             <Form.Item
               {...formItemLayout}
-              label="Confirme a Senha"
-              name="password_confirm"
+              label="Valor de Venda"
+              name="sellValue"
               rules={[
                 {
                   required: true,
-                  message: 'Confirme a senha!',
+                  message: 'Informe um valor!',
                 },
               ]}
             >
-              <Input.Password />
+              <InputNumber
+                addonBefore={'R$'}
+                style={{ width: '100%' }} min={0} step={0.01} />
             </Form.Item>
 
             <Form.Item
@@ -200,4 +193,4 @@ const CreateUserForm = () => {
   </>
 };
 
-export default CreateUserForm;
+export default NewProductForm;

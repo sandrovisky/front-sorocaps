@@ -2,12 +2,14 @@ import { Tabs } from "antd";
 import Header from "../Header/header"
 import { BarcodeOutlined, UserOutlined, InboxOutlined } from '@ant-design/icons';
 import MenuCustomer from './Customers/customers'
+import MenuProduct from "./Product/product";
+import MenuOrder from "./Order/orders";
 const { TabPane } = Tabs;
 
 const Home = () => {
   return <>
     <Header header={[['Home', '/home/']]} />
-    <div style={{textAlign: "initial"}}>
+    <div style={{ textAlign: "initial" }}>
       <Tabs >
         <TabPane
           tab={
@@ -29,7 +31,7 @@ const Home = () => {
           }
           key="2"
         >
-          Tab 2
+          <MenuOrder />
         </TabPane>
         <TabPane
           tab={
@@ -40,9 +42,13 @@ const Home = () => {
           }
           key="3"
         >
-          Tab 3
+          <MenuProduct />
         </TabPane>
       </Tabs>
+      {(fields, { add, remove }) => <>
+        {console.log(fields)}
+      </>
+      }
     </div>
   </>
 }

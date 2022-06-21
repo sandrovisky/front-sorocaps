@@ -25,6 +25,7 @@ const Login = () => {
       .then((response) => {
         console.log(response)
         form.resetFields()
+        localStorage.setItem('token', response.data.token)
         dispatch(changeUser(response.data.result.name))
       })
       .catch((err) => {
@@ -58,7 +59,7 @@ const Login = () => {
     <div style={{ padding: '20px' }}>
       {
         createError ? <Alert
-          description={errorMsg}
+          description={errorMsg ? errorMsg : 'Erro não definido, verifique a conexão!'}
           type="error"
           closable
         /> : null
