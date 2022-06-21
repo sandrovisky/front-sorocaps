@@ -1,7 +1,7 @@
-import { Breadcrumb, Button, Descriptions, PageHeader } from 'antd';
+import { Breadcrumb, Button, PageHeader } from 'antd';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeUser, logout } from '../redux/userSlice'
+import { logout } from '../redux/userSlice'
 
 const Header = (props) => {
   const user = useSelector(state => state.user)
@@ -28,7 +28,7 @@ const Header = (props) => {
       <Breadcrumb separator="/">
         {
           props.header.map((ele, i) => {
-            if ((i + 1) == props.header.length) {
+            if ((i + 1) === props.header.length) {
               return <Breadcrumb.Item key={i}>{ele[0]}</Breadcrumb.Item>
             }
             return <Breadcrumb.Item key={i}><Link to={ele[1]} key={i}>{ele[0]}</Link></Breadcrumb.Item>

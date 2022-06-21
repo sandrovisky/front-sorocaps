@@ -1,7 +1,7 @@
 import { Button, Form, Input, Row, Col, Typography, Spin, Alert } from 'antd';
 import { useState } from 'react';
-import api from '../api';
-import Header from '../Header/header';
+import api from '../../api';
+import Header from '../../Header/header';
 const { Title } = Typography;
 
 const CreateUserForm = () => {

@@ -40,10 +40,7 @@ const Login = () => {
   };
 
   const paths = [
-    {
-      path: 'login',
-      breadcrumbName: 'Login',
-    }
+    ['Login', '/login/']
   ]
 
   const formItemLayout = {
