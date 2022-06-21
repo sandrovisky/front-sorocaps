@@ -58,7 +58,7 @@ const NewCustomerForm = () => {
           pos = 9;
       }
       let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-      if (resultado !== digitos.charAt(0))
+      if (resultado.toString() !== digitos.charAt(0))
         return false;
 
       tamanho = tamanho + 1;
@@ -71,7 +71,7 @@ const NewCustomerForm = () => {
           pos = 9;
       }
       resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-      if (resultado !== digitos.charAt(1))
+      if (resultado.toString() !== digitos.charAt(1))
         return false;
 
       return true;
