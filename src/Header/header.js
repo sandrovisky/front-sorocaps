@@ -13,7 +13,7 @@ const Header = (props) => {
 
   return <div className="site-page-header-ghost-wrapper">
     <PageHeader
-      style={{ border: '1px solid' }}
+      style={{ border: '1px solid', margin: '-25px -25px 0px -25px' }}
       ghost={true}
       title="Sorocaps"
       extra={[user.logged ? <div key={0}>

@@ -45,10 +45,6 @@ const Home = () => {
           <MenuProduct />
         </TabPane>
       </Tabs>
-      {(fields, { add, remove }) => <>
-        {console.log(fields)}
-      </>
-      }
     </div>
   </>
 }
