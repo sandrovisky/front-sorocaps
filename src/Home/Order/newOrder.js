@@ -1,17 +1,22 @@
 import { MinusCircleOutlined, PlusOutlined, SaveTwoTone } from '@ant-design/icons';
-import { Button, Card, Col, Divider, Form, Input, InputNumber, Row, Select, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Col, Divider, Form, Input, InputNumber, Row, Select, Spin, Typography } from 'antd';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import Header from '../../Header/header';
 const { Text } = Typography;
 const { Option } = Select;
 
 const NewOrderForm = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [productsList, setProductsList] = useState([]);
   const [customersList, setCustomerList] = useState([]);
   const [form] = Form.useForm();
+  const [createError, setCreateError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [createSuccess, setCreateSuccess] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -37,17 +42,63 @@ const NewOrderForm = () => {
     setLoading(false)
   }, []);
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
+    setLoading(true);
+    setCreateError(false)
+    setCreateSuccess(false)
+
     const products = values.products;
     let error = false;
-    products.forEach((productItem) => {
+
+    products.forEach((productItem, index) => {
       const product = JSON.parse(productItem.product)
-      console.table(product)
-      if (productItem > product.sellValue) {
+
+      if (productItem.value < product.sellValue) {
         error = true;
+        form.setFields([
+          {
+            name: ['products', index, 'value'],
+            errors: ['Valor não poder menor que o preço de venda!'],
+          },
+        ])
       }
     })
-    console.log('Received values of form:', values);
+
+    if (error) {
+      return
+    }
+
+    const customer = JSON.parse(values.customer)
+    let orderItens = [];
+
+    products.forEach((productItem) => {
+      const id = JSON.parse(productItem.product).id;
+      orderItens.push({
+        value: productItem.value,
+        amount: productItem.amount,
+        total: productItem.total,
+        id
+      })
+    })
+
+    await api.post(`/orders/create/`, {
+      customer: customer,
+      products: orderItens,
+      total
+    })
+      .then(async (response) => {
+        setCreateSuccess(true)
+        console.log(response)
+        setTimeout(() => {
+          navigate('/home')
+        }, '2000')
+      })
+      .catch((err) => {
+        console.log(err)
+        setCreateError(true)
+        setErrorMsg(err.response.data.message)
+        setLoading(false)
+      })
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -111,10 +162,38 @@ const NewOrderForm = () => {
     setTotal(totalProducts)
   }
 
+  const clearFieldErrors = () => {
+    const products = form.getFieldsValue().products;
+    form.validateFields()
+    products.forEach((product, index) => {
+      form.setFields([
+        {
+          name: ['products', index, 'value'],
+          errors: [],
+        },
+      ])
+    })
+  };
+
   return (
     <>
       <Header header={[['Home', "/home/"], ['Novo Pedido', "/home/orders/create/"]]} />
       <div style={{ paddingTop: '20px' }}>
+        {
+          createError ? <Alert
+            description={errorMsg ?? 'Erro durante a criação do pedido. Verifique conexão com servidor!'}
+            type="error"
+            closable
+          /> : null
+        }
+        {
+          createSuccess ? <Alert
+            description="Pedido criado com sucesso!"
+            type="success"
+            banner={true}
+            closable
+          /> : null
+        }
         <Spin spinning={loading}>
           <Card title="Novo Pedido" bordered={true} style={{ width: '100%', textAlign: 'initial' }}>
             <Form form={form} name="dynamic_form_nest_item" onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
@@ -264,6 +343,7 @@ const NewOrderForm = () => {
                             <MinusCircleOutlined onClick={() => {
                               remove(field.name)
                               handleUpdateTotal()
+                              clearFieldErrors()
                             }} />
                           </Col>
                         </Row>
@@ -272,7 +352,9 @@ const NewOrderForm = () => {
                       <Row >
                         <Col span={8}>
                           <Form.Item style={{ marginBottom: '0px' }}>
-                            <Button type="dashed" onClick={() => { add(); handleUpdateTotal() }} icon={<PlusOutlined />}>
+                            <Button type="dashed" onClick={() => {
+                              add(); handleUpdateTotal();
+                            }} icon={<PlusOutlined />}>
                               Adicionar Produto
                             </Button>
                           </Form.Item>

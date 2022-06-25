@@ -5,23 +5,24 @@ import { logout } from './redux/userSlice';
 
 
 const api = axios.create({
-    //http://localhost:3333
-    baseURL: "http://localhost:3333"
+  //http://localhost:3333
+  baseURL: "http://localhost:3333"
 })
 
-api.interceptors.request.use(async config => {    
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+api.interceptors.request.use(async config => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 api.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
   const status = error.response.status
-  if( status === 401 ) {
+  const logged = localStorage.getItem("logged");
+  if (status === 401 && logged === 'true') {
     alert(error.response.data.error)
     store.dispatch(logout())
   }
