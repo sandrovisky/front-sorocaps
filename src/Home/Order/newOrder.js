@@ -50,6 +50,13 @@ const NewOrderForm = () => {
     const products = values.products;
     let error = false;
 
+    if (!products) {
+      setCreateError(true)
+      setErrorMsg("Sem produtos no pedido!")
+      setLoading(false)
+      return
+    }
+
     products.forEach((productItem, index) => {
       const product = JSON.parse(productItem.product)
 

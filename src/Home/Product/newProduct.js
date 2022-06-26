@@ -130,6 +130,12 @@ const NewProductForm = () => {
               {...formItemLayout}
               label="Descrição"
               name="description"
+              rules={[
+                {
+                  required: true,
+                  message: 'Informe uma descrição!',
+                },
+              ]}
             >
               <TextArea rows={2} />
             </Form.Item>

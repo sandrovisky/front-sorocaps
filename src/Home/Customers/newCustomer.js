@@ -181,7 +181,7 @@ const NewCustomerForm = () => {
     <div style={{ padding: '20px' }}>
       {
         createError ? <Alert
-          description={errorMsg ?? 'Erro durante a criação do usuário. Verifique conexão com servidor!'}
+          description={errorMsg ? errorMsg : 'Erro durante a criação do usuário. Verifique conexão com servidor!'}
           type="error"
           closable
         /> : null
