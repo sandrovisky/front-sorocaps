@@ -32,7 +32,7 @@ const NewProductForm = () => {
     setCreateError(false)
     setCreateSuccess(false)
 
-    if (buyValue > sellValue) {      
+    if (buyValue > sellValue) {
       error = true
       form.setFields([
         {
@@ -126,6 +126,7 @@ const NewProductForm = () => {
             </Form.Item>
 
             <Form.Item
+              required
               {...formItemLayout}
               label="Descrição"
               name="description"

@@ -1,139 +1,188 @@
-import { DownOutlined } from '@ant-design/icons';
-import { Badge, Dropdown, Menu, Space, Table } from 'antd';
-const menu = (
-  <Menu
-    items={[
-      {
-        key: '1',
-        label: 'Action 1',
-      },
-      {
-        key: '2',
-        label: 'Action 2',
-      },
-    ]}
-  />
-);
+import { FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
+import { Button, Spin, Table, Tabs } from 'antd';
+import { useEffect, useState } from 'react';
+import api from '../../api';
+
+const { TabPane } = Tabs;
 
 const TableOrders = () => {
-  const expandedRowRender = () => {
+  const [dataSeparated, setDataSeparated] = useState([])
+  const [dataOpen, setDataOpen] = useState([])
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getData() {
+      await api.get('/orders/')
+        .then(response => {
+          console.log('response orders', response)
+          const orders = response.data;
+          let auxSep = []
+          let auxOpen = []
+
+          orders.forEach(order => {
+            if (order.status !== 0) {
+              auxSep.push({
+                key: order.id,
+                id: order.id,
+                customer: order.customer.socialName.toUpperCase(),
+                total: order.total.toFixed(2),
+                status: "APROVADO",
+                order: order,
+              })
+            } else {
+              auxOpen.push({
+                key: order.id,
+                id: order.id,
+                customer: order.customer.socialName.toUpperCase(),
+                total: order.total.toFixed(2),
+                status: "EM PROCESSO",
+                order: order,
+                action: <Button type='link' onClick={() => approveOrder(order.id)}>Aprovar</Button>
+              })
+            }
+          });
+
+          setDataSeparated(auxSep)
+          setDataOpen(auxOpen)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally((response) => {
+          setLoading(false)
+        })
+    }
+    getData()
+    setLoading(false)
+  }, [loading]);
+
+  const expandedRowRender = ({ order }) => {
     const columns = [
       {
-        title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
+        title: 'Codigo',
+        dataIndex: 'code',
+        key: 'code',
       },
       {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
+        title: 'Produto',
+        dataIndex: 'product',
+        key: 'product',
       },
       {
-        title: 'Status',
-        key: 'state',
-        render: () => (
-          <span>
-            <Badge status="success" />
-            Finished
-          </span>
-        ),
+        title: 'Valor',
+        dataIndex: 'value',
+        key: 'value',
       },
       {
-        title: 'Upgrade Status',
-        dataIndex: 'upgradeNum',
-        key: 'upgradeNum',
+        title: 'Quantidade',
+        dataIndex: 'amount',
+        key: 'amount',
       },
       {
-        title: 'Action',
-        dataIndex: 'operation',
-        key: 'operation',
-        render: () => (
-          <Space size="middle">
-            <a href="">Pause</a>
-            <a href="">Stop</a>
-            <Dropdown overlay={menu}>
-              <a href="">
-                More <DownOutlined />
-              </a>
-            </Dropdown>
-          </Space>
-        ),
+        title: 'Total',
+        dataIndex: 'total',
+        key: 'total',
       },
     ];
-    const data = [];
+    const details = [];
 
-    for (let i = 0; i < 3; ++i) {
-      data.push({
-        key: i,
-        date: '2014-12-24 23:12:00',
-        name: 'This is production name',
-        upgradeNum: 'Upgraded: 56',
+    order.itens.forEach(item => {
+      details.push({
+        key: item.id,
+        code: item.product.code,
+        product: item.product.description,
+        value: item.soldValue.toFixed(2),
+        amount: item.amount,
+        total: (item.amount * item.amount).toFixed(2)
       });
-    }
+    });
 
-    return <Table columns={columns} dataSource={data} pagination={false} />;
+    return <Table columns={columns} dataSource={details} pagination={false} />;
   };
+
+  const approveOrder = (id) => {
+    setLoading(true)
+    api.patch('/orders/approve/', {
+      id
+    })
+      .then((response) => {
+        console.log('approve', response.data)
+      })
+      .catch((error) => {
+        console.log(error.response.data)
+      })
+      .finally((response) => {
+        setLoading(false)
+      })
+  }
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
-      title: 'Platform',
-      dataIndex: 'platform',
-      key: 'platform',
+      title: 'Cliente',
+      dataIndex: 'customer',
+      key: 'customer',
     },
     {
-      title: 'Version',
-      dataIndex: 'version',
-      key: 'version',
+      title: 'Total',
+      dataIndex: 'total',
+      key: 'total',
     },
     {
-      title: 'Upgraded',
-      dataIndex: 'upgradeNum',
-      key: 'upgradeNum',
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
-      title: 'Creator',
-      dataIndex: 'creator',
-      key: 'creator',
-    },
-    {
-      title: 'Date',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-    },
-    {
-      title: 'Action',
-      key: 'operation',
-      render: () => <a>Publish</a>,
+      title: 'Ações',
+      dataIndex: 'action',
+      key: 'action',
     },
   ];
-  const data = [];
-
-  for (let i = 0; i < 3; ++i) {
-    data.push({
-      key: i,
-      name: 'Screem',
-      platform: 'iOS',
-      version: '10.3.4.5654',
-      upgradeNum: 500,
-      creator: 'Jack',
-      createdAt: '2014-12-24 23:12:00',
-    });
-  }
 
   return (
-    <Table
-      className="components-table-demo-nested"
-      columns={columns}
-      expandable={{
-        expandedRowRender,
-      }}
-      dataSource={data}
-    />
+    <Spin spinning={loading}>
+      <Tabs style={{ paddingTop: '20px' }}>
+        <TabPane
+          tab={
+            <span>
+              <FolderOpenOutlined />
+              Em Aberto
+            </span>
+          }
+          key="1"
+        >
+          <Table
+            columns={columns}
+            expandable={{
+              expandedRowRender,
+            }}
+            dataSource={dataOpen}
+          />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <FolderOutlined />
+              Separados
+            </span>
+          }
+          key="2"
+        >
+          <Table
+            columns={columns}
+            expandable={{
+              expandedRowRender,
+            }}
+            dataSource={dataSeparated}
+          />
+        </TabPane>
+      </Tabs>
+    </Spin>
   );
 }
 
