@@ -93,7 +93,7 @@ const TableOrders = () => {
         product: item.product.description,
         value: item.soldValue.toFixed(2),
         amount: item.amount,
-        total: (item.amount * item.amount).toFixed(2)
+        total: (item.amount * item.soldValue).toFixed(2)
       });
     });
 
